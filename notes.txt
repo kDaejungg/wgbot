@@ -1,4 +1,0 @@
-https://discord.com/oauth2/authorize?client_id=1485221526084128910&permissions=8&integration_type=0&scope=bot
-
-Otomatik cevaplama gelecek
-Kullanıcı Kick eklenecek
