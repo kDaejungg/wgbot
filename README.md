@@ -235,15 +235,20 @@ WGBot/
 ├── .gitignore          # Prevents token and unnecessary files from being pushed to GitHub
 ├── data/
 │   ├── warns.json      # Warning records (auto-generated)
-│   └── ranks.json      # XP and rank data (auto-generated)
+│   ├── ranks.json      # XP and rank data (auto-generated)
+│   ├── levelroles.json # Level role rewards (auto-generated)
+│   ├── autoreplies.json# Auto reply triggers and responses (auto-generated)
+│   └── youtube.json    # YouTube notification subscriptions (auto-generated)
 └── cogs/
-    ├── moderation.py   # ban, unban, timeout, delete, lock, unlock, slowmode
+    ├── moderation.py   # ban, kick, unban, timeout, delete, lock, unlock, slowmode
     ├── warns.py        # warn, warnings, clearwarnings
     ├── voice.py        # mute-voice, unmute-voice, move
     ├── roles.py        # role add/remove
     ├── channels.py     # create-channel
     ├── info.py         # userinfo, avatar, serverinfo, roles
-    ├── rank.py         # rank, leaderboard, XP system
+    ├── rank.py         # rank, leaderboard, XP system, levelrole
+    ├── autoreply.py    # autoreply add/remove/list
+    ├── youtube.py      # youtube add/remove/list
     ├── fun.py          # roll
     ├── welcome.py      # welcome messages and auto role on member join
     ├── setup.py        # set-welcome-channel, set-welcome-message, set-auto-role, settings
