@@ -212,35 +212,7 @@ After running the bot, follow these steps to invite it to your server:
 ### 2. Select Required Permissions
 Under **Bot Permissions**, check exactly the following:
 
-**General Permissions**
-
-✅ Manage Roles
-
-✅ Manage Channels
-
-✅ Kick Members
-
-✅ Ban Members
-
-✅ Moderate Members
-
-**Text Permissions**
-
-✅ Send Messages
-
-✅ Manage Messages
-
-✅ Embed Links
-
-✅ Read Message History
-
-✅ Use Slash Commands
-
-**Voice Permissions**
-
-✅ Mute Members
-
-✅ Move Members
+✅ Adminastrator
 
 ### 3. Invite
 4. Copy the **Generated URL** at the bottom of the page.
