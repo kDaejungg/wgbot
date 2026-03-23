@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from datetime import timedelta
+import asyncio
 
 class Moderation(commands.Cog):
     def __init__(self, bot):
@@ -17,6 +18,13 @@ class Moderation(commands.Cog):
             return "⚠️ You cannot perform this action on a member with a higher or equal role to yours."
         return None
 
+    async def auto_delete(self, interaction: discord.Interaction, delay: int = 3):
+        await asyncio.sleep(delay)
+        try:
+            await interaction.delete_original_response()
+        except discord.NotFound:
+            pass
+
     @app_commands.command(name="ban", description="Bans a member from the server.")
     @app_commands.describe(user="The member to ban", reason="Reason for the ban")
     @app_commands.checks.has_permissions(ban_members=True)
@@ -26,7 +34,18 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(error, ephemeral=True)
             return
         await user.ban(reason=reason)
-        await interaction.response.send_message(f"🔨 {user.mention} has been banned. Reason: {reason}", ephemeral=True)
+        await interaction.response.send_message(f"🔨 {user.mention} has been banned. Reason: {reason}", ephemeral=False)
+
+    @app_commands.command(name="kick", description="Kicks a member from the server.")
+    @app_commands.describe(user="The member to kick", reason="Reason for the kick")
+    @app_commands.checks.has_permissions(kick_members=True)
+    async def kick(self, interaction: discord.Interaction, user: discord.Member, reason: str = "No reason provided."):
+        error = self.hierarchy_check(interaction, user)
+        if error:
+            await interaction.response.send_message(error, ephemeral=True)
+            return
+        await user.kick(reason=reason)
+        await interaction.response.send_message(f"👢 {user.mention} has been kicked. Reason: {reason}", ephemeral=False)
 
     @app_commands.command(name="unban", description="Unbans a user from the server.")
     @app_commands.describe(user_id="The ID of the user to unban")
@@ -51,7 +70,7 @@ class Moderation(commands.Cog):
             return
         duration = timedelta(minutes=minutes)
         await user.timeout(duration, reason=reason)
-        await interaction.response.send_message(f"⏱️ {user.mention} has been timed out for {minutes} minute(s). Reason: {reason}", ephemeral=True)
+        await interaction.response.send_message(f"⏱️ {user.mention} has been timed out for {minutes} minute(s). Reason: {reason}", ephemeral=False)
 
     @app_commands.command(name="delete", description="Deletes a number of messages from the channel.")
     @app_commands.describe(amount="Number of messages to delete")
@@ -59,7 +78,8 @@ class Moderation(commands.Cog):
     async def delete(self, interaction: discord.Interaction, amount: int):
         await interaction.response.defer(ephemeral=True)
         deleted = await interaction.channel.purge(limit=amount)
-        await interaction.followup.send(f"🗑️ {len(deleted)} message(s) deleted.", ephemeral=True)
+        await interaction.followup.send(f"🗑️ {len(deleted)} message(s) deleted.", ephemeral=False)
+        await self.auto_delete(interaction)
 
     @app_commands.command(name="lock", description="Locks the channel for everyone.")
     @app_commands.checks.has_permissions(manage_channels=True)
@@ -67,7 +87,8 @@ class Moderation(commands.Cog):
         overwrite = interaction.channel.overwrites_for(interaction.guild.default_role)
         overwrite.send_messages = False
         await interaction.channel.set_permissions(interaction.guild.default_role, overwrite=overwrite)
-        await interaction.response.send_message("🔒 Channel locked.", ephemeral=True)
+        await interaction.response.send_message("🔒 Channel locked.", ephemeral=False)
+        await self.auto_delete(interaction)
 
     @app_commands.command(name="unlock", description="Unlocks the channel.")
     @app_commands.checks.has_permissions(manage_channels=True)
@@ -75,7 +96,8 @@ class Moderation(commands.Cog):
         overwrite = interaction.channel.overwrites_for(interaction.guild.default_role)
         overwrite.send_messages = True
         await interaction.channel.set_permissions(interaction.guild.default_role, overwrite=overwrite)
-        await interaction.response.send_message("🔓 Channel unlocked.", ephemeral=True)
+        await interaction.response.send_message("🔓 Channel unlocked.", ephemeral=False)
+        await self.auto_delete(interaction)
 
     @app_commands.command(name="slowmode", description="Sets the slowmode for the current channel.")
     @app_commands.describe(seconds="Slowmode delay in seconds (0 to disable)")
@@ -88,7 +110,7 @@ class Moderation(commands.Cog):
         if seconds == 0:
             await interaction.response.send_message("✅ Slowmode disabled.", ephemeral=True)
         else:
-            await interaction.response.send_message(f"🐢 Slowmode set to **{seconds}** second(s).", ephemeral=True)
+            await interaction.response.send_message(f"🐢 Slowmode set to **{seconds}** second(s).", ephemeral=False)
 
     async def cog_app_command_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.MissingPermissions):

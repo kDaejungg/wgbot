@@ -1,7 +1,60 @@
-# WGBot (v1.0.0)
+# WGBot (v1.1.0)
 An open source Discord moderation bot with slash commands, supporting ban, timeout, warn, rank system, voice management, and more. Configured entirely through Discord without touching any config files.
 
 ## ⚠️ If you only want to add the bot to your server, use this link and ignore the steps below: [![Discord Invite](https://img.shields.io/badge/Discord-Add_to_Server-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/oauth2/authorize?client_id=1485221526084128910&permissions=8&integration_type=0&scope=bot)
+---
+
+## ✨ Features
+
+### 🔨 Moderation
+- **Ban, kick & unban** members with automatic hierarchy checks
+- **Timeout** members for a specified duration
+- **Warn system** with automatic DM notifications and persistent warn records
+- **Bulk message deletion** with auto-deleting confirmation
+- **Lock & unlock** channels instantly
+- **Slowmode** per channel
+
+### 🔊 Voice
+- **Server mute & unmute** members in voice channels
+- **Move** members between voice channels
+
+### 🏷️ Roles
+- **Add or remove roles** from members with hierarchy validation
+
+### 📁 Channels
+- **Create** text or voice channels via slash command
+
+### ℹ️ Info
+- **Member info** — joined date, roles, account age and more
+- **Avatar** — display any member's profile picture
+- **Server info** — member count, boost level, creation date and more
+- **Role list** — all roles in the server at a glance
+
+### ⭐ Rank & XP
+- Members earn **15–25 XP** per message (60-second cooldown to prevent spam)
+- **Level-up announcements** in channel
+- **Role rewards** — assign roles automatically when members reach specific levels
+- `/rank` and `/leaderboard` commands
+
+### 💬 Auto Reply
+- Set up **automatic replies** triggered by specific messages
+- **Multiple responses per trigger** (bot picks one at random)
+- Add multiple responses at once by separating them with commas
+
+### 🎥 YouTube Notifications
+- Subscribe to **multiple YouTube channels** per server
+- Notifications sent to a designated channel with an embed and optional role ping
+- Identified by **custom tags** for easy management
+- Checks for new videos every **5 minutes** via RSS (no API key required)
+
+### 🎲 Fun
+- **Dice roller** with customisable number of sides
+
+### ⚙️ Setup
+- **Welcome messages** with customisable text and member mention
+- **Auto role** assignment on member join
+- All settings configured **entirely through Discord**
+
 ---
 
 # Installation
@@ -161,7 +214,33 @@ Under **Bot Permissions**, check exactly the following:
 
 **General Permissions**
 
-✅ Administrator
+✅ Manage Roles
+
+✅ Manage Channels
+
+✅ Kick Members
+
+✅ Ban Members
+
+✅ Moderate Members
+
+**Text Permissions**
+
+✅ Send Messages
+
+✅ Manage Messages
+
+✅ Embed Links
+
+✅ Read Message History
+
+✅ Use Slash Commands
+
+**Voice Permissions**
+
+✅ Mute Members
+
+✅ Move Members
 
 ### 3. Invite
 4. Copy the **Generated URL** at the bottom of the page.

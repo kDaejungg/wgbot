@@ -19,6 +19,7 @@ class Help(commands.Cog):
             name="🔨 Moderation",
             value=(
                 "`/ban <user> [reason]` — Bans a member.\n"
+                "`/kick <user> [reason]` — Kicks a member.\n"
                 "`/unban <user_id>` — Unbans a user by ID.\n"
                 "`/timeout <user> [minutes] [reason]` — Times out a member.\n"
                 "`/warn <user> [reason]` — Warns a member via DM.\n"
@@ -74,7 +75,10 @@ class Help(commands.Cog):
             name="⭐ Rank",
             value=(
                 "`/rank [user]` — Shows your rank and XP.\n"
-                "`/leaderboard` — Shows the top 10 members by XP."
+                "`/leaderboard` — Shows the top 10 members by XP.\n"
+                "`/levelrole add <level> <role>` — Assigns a role reward for a level.\n"
+                "`/levelrole remove <level>` — Removes the role reward for a level.\n"
+                "`/levelrole list` — Lists all level role rewards."
             ),
             inline=False
         )
@@ -88,6 +92,16 @@ class Help(commands.Cog):
         )
 
         embed.add_field(
+            name="💬 Auto Reply (Admin only)",
+            value=(
+                "`/autoreply add <trigger> <response>` — Adds an automatic reply. Separate multiple responses with commas.\n"
+                "`/autoreply remove <trigger>` — Removes an automatic reply.\n"
+                "`/autoreply list` — Lists all automatic replies."
+            ),
+            inline=False
+        )
+
+        embed.add_field(
             name="⚙️ Setup (Admin only)",
             value=(
                 "`/set-welcome-channel <channel>` — Sets the welcome channel.\n"
@@ -96,6 +110,17 @@ class Help(commands.Cog):
                 "`/disable-welcome` — Disables welcome messages.\n"
                 "`/disable-auto-role` — Disables auto role.\n"
                 "`/settings` — Shows current bot settings."
+            ),
+            inline=False
+        )
+
+        embed.add_field(
+            name="🎥 YouTube (Admin only)",
+            value=(
+                "`/youtube add <tag> <channel_id> <notify_channel> [ping_role]` — Adds a YouTube notification. Tag is a short name to identify it (e.g. `iu`).\n"
+                "`/youtube remove <tag>` — Removes a YouTube notification by tag.\n"
+                "`/youtube list` — Lists all subscriptions.\n"
+"\n💡 **How to find a YouTube channel ID:** Go to the channel → **About** → **Share** → **Copy channel ID**."
             ),
             inline=False
         )

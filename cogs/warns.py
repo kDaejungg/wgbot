@@ -10,7 +10,10 @@ def load_warns():
     if not os.path.exists(WARNS_FILE):
         return {}
     with open(WARNS_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+        try:
+            return json.load(f)
+        except json.JSONDecodeError:
+            return {}
 
 def save_warns(data):
     with open(WARNS_FILE, "w", encoding="utf-8") as f:

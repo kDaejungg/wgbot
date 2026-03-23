@@ -1,6 +1,6 @@
 {
   "bot_name": "WGBot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "developer": "Enes Ramazan Whitelineage",
   "license": "MIT License",
   "description": "Open source Discord moderation bot with slash commands.",
