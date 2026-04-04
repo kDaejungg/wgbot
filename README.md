@@ -262,4 +262,4 @@ Never share your `.env` file or commit it to a public repository. The `.gitignor
 ---
 *Made by Enes Ramazan Whitelineage*
 
-#### Contact & feedback: [Discord](https://discord.gg/vV8gEpHDXH)
+#### Contact & feedback: [Discord](https://discord.gg/vV8gEpHDXH) & [Reddit](https://www.reddit.com/r/WhitelineageDEV/)
