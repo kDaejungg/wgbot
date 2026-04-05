@@ -1,303 +1,286 @@
 [English](README.md) | [Türkçe](README.tr.md)
 
-# WGBot (v1.1.1)
+# WGBot (v1.2.0)
+Slash komutlarıyla çalışan açık kaynaklı bir Discord moderasyon botu. Ban, timeout, uyarı sistemi, rank, ses yönetimi, tepki rolleri, anketler ve daha fazlasını destekler. Hiçbir dosyaya dokunmadan tamamen Discord üzerinden yapılandırılır.
 
-Slash (eğik çizgi) komutlarını destekleyen; yasaklama, zamanaşımı, uyarı, seviye sistemi, ses yönetimi ve daha fazlasını içeren açık kaynaklı bir Discord moderasyon botu. Herhangi bir konfigürasyon dosyasına dokunmadan tamamen Discord üzerinden yapılandırılır.
-
-## ⚠️ Botu sadece sunucunuza eklemek istiyorsanız, aşağıdaki linki kullanın ve kurulum adımlarını atlayın:[![Discord'a Davet Et](https://img.shields.io/badge/Discord-Add_to_Server-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/oauth2/authorize?client_id=1485221526084128910&permissions=8&integration_type=0&scope=bot)
-
------
+## ⚠️ Botu yalnızca sunucuna eklemek istiyorsan bu bağlantıyı kullanıp aşağıdaki adımları atlayabilirsin: [![Discord Davet](https://img.shields.io/badge/Discord-Sunucuya_Ekle-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/oauth2/authorize?client_id=1485221526084128910&permissions=8&integration_type=0&scope=bot)
+---
 
 ## ✨ Özellikler
 
 ### 🔨 Moderasyon
-
-  - **Yasaklama, Atma ve Yasak Kaldırma:** Otomatik hiyerarşi kontrolü ile üyeleri yönetin.
-  - **Zamanaşımı (Timeout):** Üyeleri belirli bir süre boyunca susturun.
-  - **Uyarı Sistemi:** Otomatik DM bildirimi ve kalıcı uyarı kayıtları.
-  - **Toplu Mesaj Silme:** Otomatik silinen onay mesajı ile kanal temizliği.
-  - **Kilit Açma/Kapatma:** Kanalları anında kilitleyin veya açın.
-  - **Yavaş Mod:** Kanal bazlı mesaj gönderim hızı ayarı.
+- Otomatik hiyerarşi kontrolüyle **ban, kick ve unban**
+- Belirli süre için **timeout**
+- Otomatik DM bildirimleri ve kalıcı kayıtlarla **uyarı sistemi**
+- Onay mesajının otomatik silinmesiyle **toplu mesaj silme**
+- Kanalları anında **kilitleme ve kilit açma**
+- Kanal bazında **yavaş mod**
 
 ### 🔊 Ses
-
-  - **Seste Sustur/Aç:** Üyeleri sesli kanallarda sunucu genelinde susturun veya açın.
-  - **Taşı:** Üyeleri sesli kanallar arasında taşıyın.
+- Ses kanalındaki üyeleri **susturma ve susturmayı kaldırma**
+- Üyeleri ses kanalları arasında **taşıma**
+- **Ses kanalı kullanıcı limiti**: herhangi bir ses kanalına kullanıcı kapasitesi belirleme veya kaldırma
 
 ### 🏷️ Roller
-
-  - **Rol Ekle/Çıkar:** Hiyerarşi doğrulaması ile üyelerin rollerini yönetin.
+- Hiyerarşi doğrulamasıyla üyelere **rol ekleme ve çıkarma**
+- **HEX rol rengi**: herhangi bir HEX koduyla rol rengi değiştirme
 
 ### 📁 Kanallar
-
-  - **Kanal Oluşturma:** Slash komutu ile anında metin veya ses kanalı oluşturun.
+- Slash komutla **metin veya ses kanalı oluşturma**
 
 ### ℹ️ Bilgi
+- **Üye bilgisi**: katılma tarihi, roller, hesap yaşı ve daha fazlası
+- **Avatar**: herhangi bir üyenin profil fotoğrafını görüntüleme
+- **Sunucu bilgisi**: üye sayısı, boost seviyesi, oluşturulma tarihi ve daha fazlası
+- **Rol listesi**: sunucudaki tüm roller tek bakışta
 
-  - **Kullanıcı Bilgisi:** Katılım tarihi, roller, hesap yaşı ve daha fazlası.
-  - **Avatar:** Herhangi bir üyenin profil resmini görüntüleyin.
-  - **Sunucu Bilgisi:** Üye sayısı, takviye seviyesi, oluşturma tarihi vb.
-  - **Rol Listesi:** Sunucudaki tüm rollere hızlıca göz atın.
-
-### ⭐ Seviye & XP
-
-  - Mesaj başına **15–25 XP** kazancı (spam önlemek için 60 saniye bekleme süresi).
-  - Kanal içi **seviye atlama duyuruları**.
-  - **Rol Ödülleri:** Belirli seviyelere ulaşıldığında otomatik rol atama.
-  - `/rank` ve `/leaderboard` komutları.
+### ⭐ Rank ve XP
+- Üyeler her mesajda **15–25 XP** kazanır (spam önlemek için 60 saniyelik bekleme süresi)
+- Kanalda **seviye atlama duyuruları**
+- **Rol ödülleri**: üyeler belirli seviyelere ulaştığında otomatik rol atama
+- `/rank` ve `/leaderboard` komutları
 
 ### 💬 Otomatik Yanıt
-
-  - Belirli mesajlar tarafından tetiklenen **otomatik yanıtlar** oluşturun.
-  - **Tetikleyici başına birden fazla yanıt:** Bot rastgele birini seçer.
-  - Virgülle ayırarak tek seferde birden fazla yanıt ekleme özelliği.
+- Belirli mesajlarla tetiklenen **otomatik yanıtlar** oluşturma
+- **Tetikleyici başına birden fazla yanıt** (bot rastgele birini seçer)
+- Virgülle ayırarak birden fazla yanıtı aynı anda ekleme
 
 ### 🎥 YouTube Bildirimleri
+- Sunucu başına **birden fazla YouTube kanalı** aboneliği
+- Bildirimler embed ve isteğe bağlı rol pingi ile belirlenen kanala gönderilir
+- Kolay yönetim için **özel etiketlerle** tanımlama
+- RSS aracılığıyla her **5 dakikada bir** yeni video kontrolü (API anahtarı gerekmez)
 
-  - Sunucu başına **birden fazla YouTube kanalına** abone olun.
-  - Özel bir kanala gönderilen, embed içeren ve isteğe bağlı rol etiketlemeli bildirimler.
-  - Kolay yönetim için **özel etiketlerle** tanımlanır.
-  - RSS aracılığıyla her **5 dakikada bir** kontrol eder (API anahtarı gerektirmez).
+### 📊 Anket
+- En fazla 9 seçenekle **tepki tabanlı anket** oluşturma
+- Seçenekleri `;` ile ayır. Bot emojileri otomatik ekler
+
+### 🎭 Tepki Rolleri
+- Üyeler **bir mesaja tepki verdiğinde** otomatik olarak rol atama
+- Tepki kaldırıldığında rol da kaldırılır
+- Tamamen kalıcı, bot yeniden başlatılsa da çalışmaya devam eder
+- `/reactionrole add`, `/reactionrole remove`, `/reactionrole list` ile yönetim
 
 ### 🎲 Eğlence
+- Özelleştirilebilir taraflı **zar atma**
 
-  - **Zar Atma:** Özelleştirilebilir kenar sayısına sahip zar komutu.
+### ⚙️ Kurulum
+- Özelleştirilebilir metin ve üye etiketiyle **karşılama mesajları**
+- Üye katılımında **otomatik rol** atama
+- Tüm ayarlar **tamamen Discord üzerinden** yapılandırılır
 
-### ⚙️ Kurulum (Setup)
-
-  - Özelleştirilebilir metin ve üye etiketleme içeren **hoş geldin mesajları**.
-  - Üye katıldığında **otomatik rol** atama.
-  - Tüm ayarlar **tamamen Discord üzerinden** yapılandırılır.
-
------
+---
 
 # Kurulum
 
-İşletim sisteminize uygun adımları takip edin.
+İşletim sistemine göre adımları takip et.
 
-## Konfigürasyon
+## Yapılandırma
+Kurulum bölümünün birinci adımını tamamladıktan sonra şu adımları izle:
 
-Kurulum bölümünün ilk adımını tamamladıktan sonra şu adımları izleyin:
-
-Botun çalışması için bir **Discord Bot Token** gereklidir. Nasıl alacağınızı bilmiyorsanız, [Discord Developer Portal](https://discord.com/developers/applications) adresine gidin, bir uygulama oluşturun ve **Bot** sekmesinden tokeninizi kopyalayın.
+Botun çalışması için bir **Discord Bot Token** gerekir. Nasıl alacağını bilmiyorsan [Discord Developer Portal](https://discord.com/developers/applications)'a git, bir uygulama oluştur ve **Bot** sekmesinden tokenını kopyala.
 
 ### Adım Adım Token Kurulumu:
 
-1.  **Gizli Dosyaları Göster:**
+1. **Gizli Dosyaları Göster:**
+   - **Windows:** Klasörde "Görünüm" sekmesine tıkla ve "Gizli Öğeler"i işaretle.
+   - **Linux / macOS:** Klasör içinde `Ctrl + H` tuşlarına bas ve `.env` dosyasını bul.
 
-      - **Windows:** Klasörde "Görünüm" sekmesine tıklayın ve "Gizli Öğeler" kutucuğunu işaretleyin.
-      - **Linux / macOS:** Klasör içinde `.env` dosyasını görmek için `Ctrl + H` tuşlarına basın.
+2. **Tokenını Yapıştır:**
+   - `.env` dosyasını Notepad veya herhangi bir metin editörüyle aç.
+   - `DISCORD_TOKEN=` kısmını tokenınla değiştir: `DISCORD_TOKEN=your_teken_here`
+   - Kaydet ve kapat.
 
-2.  **Tokeni Yapıştırın:**
+> Diğer tüm ayarlar (karşılama kanalı, otomatik rol) Discord'da `/set-welcome-channel`, `/set-welcome-message` ve `/set-auto-role` komutlarıyla yapılandırılır. Herhangi bir dosyayı düzenlemeye gerek yok.
 
-      - `.env` dosyasını Not Defteri veya herhangi bir metin düzenleyici ile açın.
-      - `DISCORD_TOKEN=` kısmını kendi tokeninizle değiştirin: `DISCORD_TOKEN=tokeniniz_buraya`
-      - Dosyayı kaydedip kapatın.
+### Privileged Intent'leri Etkinleştir
+[Discord Developer Portal](https://discord.com/developers/applications)'a git, uygulamanı seç, **Bot** sekmesine tıkla ve şunları etkinleştir:
 
-> Diğer tüm ayarlar (hoş geldin kanalı, oto-rol vb.) doğrudan Discord içinden `/set-welcome-channel`, `/set-welcome-message` ve `/set-auto-role` komutları ile yapılır. Dosya düzenlemeye gerek yoktur.
+- ✅ Server Members Intent
+- ✅ Message Content Intent
 
-### Privileged Intents (Ayrıcalıklı Niyetler) Etkinleştirme
-
-[Discord Developer Portal](https://discord.com/developers/applications) adresine gidin, uygulamanızı seçin, **Bot** sekmesine tıklayın ve şunları etkinleştirin:
-
-  - ✅ Server Members Intent
-  - ✅ Message Content Intent
-
------
+---
 
 ## Linux
 
-Linux'ta Python genellikle yüklü gelir. Terminalinizi açın ve şu adımları izleyin:
+Python genellikle Linux'ta önceden yüklüdür. Terminali aç ve şu adımları izle:
 
-1.  **Depoyu kopyalayın:**
+1. **Depoyu klonla:**
+   ```bash
+   git clone https://github.com/kDaejungg/wgbot.git
+   ```
 
-    ```bash
-    git clone https://github.com/kDaejungg/wgbot.git
-    ```
+   ⚠️ DEVAM ETMEDEN ÖNCE YUKARIDAKİ YAPILANDIRMA ADIMLARINI TAKİP ET
 
-    ⚠️ DEVAM ETMEDEN ÖNCE YUKARIDAKİ KONFİGÜRASYON ADIMLARINI TAMAMLAYIN
+   ```bash
+   cd wgbot
+   ```
 
-    ```bash
-    cd wgbot
-    ```
+2. **Sanal ortam oluştur:**
+   ```bash
+   python3 -m venv venv
+   ```
 
-2.  **Sanal ortam (venv) oluşturun:**
+3. **Sanal ortamı etkinleştir:**
+   ```bash
+   source venv/bin/activate
+   ```
 
-    ```bash
-    python3 -m venv venv
-    ```
+4. **Gereksinimleri yükle:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-3.  **Sanal ortamı aktifleştirin:**
+5. **Botu çalıştır:**
+   ```bash
+   python3 bot.py
+   ```
 
-    ```bash
-    source venv/bin/activate
-    ```
-
-4.  **Gereksinimleri yükleyin:**
-
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-5.  **Botu çalıştırın:**
-
-    ```bash
-    python3 bot.py
-    ```
-
------
+---
 
 ## Windows
 
-PowerShell veya Komut İstemi (CMD) kullanabilirsiniz. Python'un sistem yoluna (PATH) eklendiğinden emin olun.
+PowerShell veya Komut İstemi (CMD) kullanabilirsin. Python'un sistem PATH'ine eklendiğinden emin ol.
 
-1.  **Depoyu kopyalayın:**
+1. **Depoyu klonla:**
+   ```powershell
+   git clone https://github.com/kDaejungg/wgbot.git
+   ```
 
-    ```powershell
-    git clone https://github.com/kDaejungg/wgbot.git
-    ```
+   ⚠️ DEVAM ETMEDEN ÖNCE YUKARIDAKİ YAPILANDIRMA ADIMLARINI TAKİP ET
 
-    ⚠️ DEVAM ETMEDEN ÖNCE YUKARIDAKİ KONFİGÜRASYON ADIMLARINI TAMAMLAYIN
+   ```powershell
+   cd wgbot
+   ```
 
-    ```powershell
-    cd wgbot
-    ```
+2. **Sanal ortam oluştur:**
+   ```powershell
+   python -m venv venv
+   ```
 
-2.  **Sanal ortam (venv) oluşturun:**
+3. **Sanal ortamı etkinleştir:**
+   ```powershell
+   .\venv\Scripts\activate
+   ```
 
-    ```powershell
-    python -m venv venv
-    ```
+4. **Gereksinimleri yükle:**
+   ```powershell
+   pip install -r requirements.txt
+   ```
 
-3.  **Sanal ortamı aktifleştirin:**
+5. **Botu çalıştır:**
+   ```powershell
+   python bot.py
+   ```
 
-    ```powershell
-    .\venv\Scripts\activate
-    ```
-
-4.  **Gereksinimleri yükleyin:**
-
-    ```powershell
-    pip install -r requirements.txt
-    ```
-
-5.  **Botu çalıştırın:**
-
-    ```powershell
-    python bot.py
-    ```
-
------
+---
 
 ## macOS
 
-Mac kullanıcıları Terminal uygulamasını kullanarak şu adımları izleyebilir:
+Mac kullanıcıları Terminal uygulamasıyla şu adımları izleyebilir:
 
-1.  **Depoyu kopyalayın:**
+1. **Depoyu klonla:**
+   ```bash
+   git clone https://github.com/kDaejungg/wgbot.git
+   ```
 
-    ```bash
-    git clone https://github.com/kDaejungg/wgbot.git
-    ```
+   ⚠️ DEVAM ETMEDEN ÖNCE YUKARIDAKİ YAPILANDIRMA ADIMLARINI TAKİP ET
 
-    ⚠️ DEVAM ETMEDEN ÖNCE YUKARIDAKİ KONFİGÜRASYON ADIMLARINI TAMAMLAYIN
+   ```bash
+   cd wgbot
+   ```
 
-    ```bash
-    cd wgbot
-    ```
+2. **Sanal ortam oluştur:**
+   ```bash
+   python3 -m venv venv
+   ```
 
-2.  **Sanal ortam (venv) oluşturun:**
+3. **Sanal ortamı etkinleştir:**
+   ```bash
+   source venv/bin/activate
+   ```
 
-    ```bash
-    python3 -m venv venv
-    ```
+4. **Gereksinimleri yükle:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-3.  **Sanal ortamı aktifleştirin:**
+5. **Botu çalıştır:**
+   ```bash
+   python3 bot.py
+   ```
 
-    ```bash
-    source venv/bin/activate
-    ```
+---
 
-4.  **Gereksinimleri yükleyin:**
+## Botu Sunucuna Ekleme
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+Botu çalıştırdıktan sonra sunucuna davet etmek için şu adımları izle:
 
-5.  **Botu çalıştırın:**
+### 1. OAuth2 Bağlantısı Oluştur
+1. **[Discord Developer Portal](https://discord.com/developers/applications)**'a git ve uygulamanı seç.
+2. Sol menüden **OAuth2** → **URL Generator**'a tıkla.
+3. **Scopes** altında şunları işaretle:
+   - [x] `bot`
+   - [x] `applications.commands` (slash komutlar için gerekli)
 
-    ```bash
-    python3 bot.py
-    ```
+### 2. Gerekli İzinleri Seç
+**Bot Permissions** altında şunu işaretle:
 
------
+✅ Administrator
 
-## Botu Sunucunuza Ekleme
+### 3. Davet Et
+4. Sayfanın altındaki **Generated URL**'yi kopyala.
+5. Tarayıcına yapıştır ve botu sunucuna davet et.
 
-Botu çalıştırdıktan sonra sunucunuza davet etmek için şu adımları izleyin:
+> **⚠️ Not:** Botu ekledikten sonra slash komutlar görünmüyorsa Discord istemcini yeniden başlat veya botun "Use Application Commands" iznine sahip olduğundan emin ol.
 
-### 1\. OAuth2 Bağlantısı Oluşturun
-
-1.  **[Discord Developer Portal](https://discord.com/developers/applications)**'a gidin ve uygulamanızı seçin.
-2.  Sol menüde **OAuth2** → **URL Generator** seçeneğine tıklayın.
-3.  **Scopes** altında şunları işaretleyin:
-      - [x] `bot`
-      - [x] `applications.commands` (Slash komutları için gereklidir)
-
-### 2\. Gerekli İzinleri Seçin
-
-**Bot Permissions** altında şu izni işaretleyin:
-
-✅ Administrator (Yönetici)
-
-### 3\. Davet Edin
-
-4.  Sayfanın altındaki **Generated URL** bağlantısını kopyalayın.
-5.  Tarayıcınıza yapıştırın ve botu sunucunuza davet edin.
-
-> **⚠️ Not:** Botu ekledikten sonra slash komutları görünmüyorsa, Discord istemcinizi yeniden başlatın veya botun "Uygulama Komutlarını Kullan" iznine sahip olduğundan emin olun.
-
------
+---
 
 ## 📂 Dosya Yapısı
 
 ```
 WGBot/
-├── bot.py             # Ana bot motoru, tüm modülleri (cog) otomatik yükler
+├── bot.py              # Ana bot motoru, tüm cog'ları otomatik yükler
 ├── config.py           # Token yükleyici ve ayar yöneticisi
-├── settings.json       # Kaydedilmiş bot yapılandırması
-├── about.json          # Bot kimlik bilgileri (versiyon, geliştirici)
+├── settings.json       # Kaydedilmiş bot ayarları
+├── about.json          # Bot kimlik bilgileri (sürüm, geliştirici)
 ├── requirements.txt    # Gerekli Python kütüphaneleri
-├── .env                # Bot tokeniniz (asla paylaşmayın)
-├── .gitignore          # Token ve gereksiz dosyaların GitHub'a yüklenmesini önler
+├── .env                # Bot tokenın (asla paylaşma)
+├── .gitignore          # Tokenın ve gereksiz dosyaların GitHub'a gönderilmesini engeller
 ├── data/
-│   ├── warns.json      # Uyarı kayıtları (otomatik oluşturulur)
-│   ├── ranks.json      # XP ve seviye verileri (otomatik oluşturulur)
-│   ├── levelroles.json # Seviye rol ödülleri (otomatik oluşturulur)
-│   ├── autoreplies.json# Otomatik yanıt tetikleyicileri (otomatik oluşturulur)
-│   └── youtube.json    # YouTube bildirim abonelikleri (otomatik oluşturulur)
+│   ├── warns.json          # Uyarı kayıtları (otomatik oluşturulur)
+│   ├── ranks.json          # XP ve rank verileri (otomatik oluşturulur)
+│   ├── levelroles.json     # Seviye rol ödülleri (otomatik oluşturulur)
+│   ├── autoreplies.json    # Otomatik yanıt tetikleyicileri ve yanıtları (otomatik oluşturulur)
+│   ├── youtube.json        # YouTube bildirim abonelikleri (otomatik oluşturulur)
+│   ├── tickets.json        # Ticket sistemi yapılandırması (otomatik oluşturulur)
+│   └── reactionroles.json  # Tepki rol yapılandırması (otomatik oluşturulur)
 └── cogs/
-    ├── moderation.py   # yasaklama, atma, susturma, silme, kilitleme vb.
-    ├── warns.py        # uyarı komutları ve yönetimi
-    ├── voice.py        # sesli kanal susturma ve taşıma
-    ├── roles.py        # rol ekleme/çıkarma
-    ├── channels.py     # kanal oluşturma
-    ├── info.py         # kullanıcı, sunucu, avatar bilgileri
-    ├── rank.py         # seviye sistemi, sıralama ve rol ödülleri
-    ├── autoreply.py    # otomatik yanıt ekleme/silme/listeleme
-    ├── youtube.py      # youtube bildirimi ekleme/silme/listeleme
-    ├── fun.py          # eğlence komutları
-    ├── welcome.py      # hoş geldin mesajları ve oto-rol
-    ├── setup.py        # sunucu ayarları komutları
-    ├── about.py        # bot hakkında bilgisi
-    └── help.py         # yardım menüsü
+    ├── moderation.py       # ban, kick, unban, timeout, delete, lock, unlock, slowmode
+    ├── warns.py            # warn, warnings, clearwarnings
+    ├── voice.py            # mute-voice, unmute-voice, move
+    ├── voice_limit.py      # voice-limit
+    ├── roles.py            # role ekle/çıkar
+    ├── role_colour.py      # role-colour
+    ├── channels.py         # create-channel
+    ├── info.py             # userinfo, avatar, serverinfo, roles
+    ├── rank.py             # rank, leaderboard, XP sistemi, levelrole
+    ├── autoreply.py        # autoreply ekle/çıkar/listele
+    ├── youtube.py          # youtube ekle/çıkar/listele
+    ├── poll.py             # poll
+    ├── reaction_roles.py   # reactionrole ekle/çıkar/listele
+    ├── fun.py              # roll
+    ├── welcome.py          # karşılama mesajları ve üye katılımında otomatik rol
+    ├── tickets.py          # ticket-setup, ticket, bugticket, feedbackticket, supportticket
+    ├── setup.py            # set-welcome-channel, set-welcome-message, set-auto-role, settings
+    ├── about.py            # about
+    └── help.py             # help
 ```
 
 ## ⚠️ Önemli Güvenlik Notu
+`.env` dosyasını asla paylaşma veya herkese açık bir depoya gönderme. `.gitignore` dosyası bunu zaten hariç tutuyor ama göndermeden önce her zaman kontrol et.
 
-`.env` dosyanızı asla başkalarıyla paylaşmayın veya halka açık bir depoya (repository) göndermeyin. `.gitignore` dosyası bunu engellemek için yapılandırılmıştır, ancak her zaman kontrol etmenizde fayda var.
+---
+*Enes Ramazan Whitelineage tarafından geliştirilmiştir.*
 
------
-
-*Enes Ramazan Whitelineage tarafından yapıldı.*
-
-#### İletişim ve Geri Bildirim: [Discord](https://discord.gg/vV8gEpHDXH) & [Reddit](https://www.reddit.com/r/WhitelineageDEV/)
+#### İletişim ve geri bildirim: [Discord](https://discord.gg/vV8gEpHDXH) & [Reddit](https://www.reddit.com/r/WhitelineageDEV/)

@@ -1,7 +1,7 @@
 [English](README.md) | [Türkçe](README.tr.md)
 
-# WGBot (v1.1.1)
-An open source Discord moderation bot with slash commands, supporting ban, timeout, warn, rank system, voice management, and more. Configured entirely through Discord without touching any config files.
+# WGBot (v1.2.0)
+An open source Discord moderation bot with slash commands, supporting ban, timeout, warn, rank system, voice management, reaction roles, polls, and more. Configured entirely through Discord without touching any config files.
 
 ## ⚠️ If you only want to add the bot to your server, use this link and ignore the steps below: [![Discord Invite](https://img.shields.io/badge/Discord-Add_to_Server-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/oauth2/authorize?client_id=1485221526084128910&permissions=8&integration_type=0&scope=bot)
 ---
@@ -9,33 +9,35 @@ An open source Discord moderation bot with slash commands, supporting ban, timeo
 ## ✨ Features
 
 ### 🔨 Moderation
-- **Ban, kick & unban** members with automatic hierarchy checks
-- **Timeout** members for a specified duration
-- **Warn system** with automatic DM notifications and persistent warn records
-- **Bulk message deletion** with auto-deleting confirmation
-- **Lock & unlock** channels instantly
-- **Slowmode** per channel
+- **Ban, kick & unban**: members with automatic hierarchy checks
+- **Timeout**: members for a specified duration
+- **Warn system**: with automatic DM notifications and persistent warn records
+- **Bulk message deletion**: with auto-deleting confirmation
+- **Lock & unlock**: channels instantly
+- **Slowmode**: per channel
 
 ### 🔊 Voice
-- **Server mute & unmute** members in voice channels
-- **Move** members between voice channels
+- **Server mute & unmute**:members in voice channels
+- **Move**:members between voice channels
+- **Voice channel user limit**: set or remove the user cap on any voice channel
 
 ### 🏷️ Roles
-- **Add or remove roles** from members with hierarchy validation
+- **Add or remove roles**:from members with hierarchy validation
+- **HEX role colour**:change a role's colour using any HEX code
 
 ### 📁 Channels
-- **Create** text or voice channels via slash command
+- **Create**:text or voice channels via slash command
 
 ### ℹ️ Info
-- **Member info** — joined date, roles, account age and more
-- **Avatar** — display any member's profile picture
-- **Server info** — member count, boost level, creation date and more
-- **Role list** — all roles in the server at a glance
+- **Member info**: joined date, roles, account age and more
+- **Avatar**: display any member's profile picture
+- **Server info**: member count, boost level, creation date and more
+- **Role list**: all roles in the server at a glance
 
 ### ⭐ Rank & XP
 - Members earn **15–25 XP** per message (60-second cooldown to prevent spam)
 - **Level-up announcements** in channel
-- **Role rewards** — assign roles automatically when members reach specific levels
+- **Role rewards**: sign roles automatically when members reach specific levels
 - `/rank` and `/leaderboard` commands
 
 ### 💬 Auto Reply
@@ -49,12 +51,21 @@ An open source Discord moderation bot with slash commands, supporting ban, timeo
 - Identified by **custom tags** for easy management
 - Checks for new videos every **5 minutes** via RSS (no API key required)
 
+### 📊 Poll
+- Create **reaction-based polls** with up to 9 options
+- Separate options with `;`
+
+### 🎭 Reaction Roles
+- Assign roles automatically when members **react to a message**
+- Roles are removed when the reaction is taken back
+- Manage via `/reactionrole add`, `/reactionrole remove`, `/reactionrole list`
+
 ### 🎲 Fun
 - **Dice roller** with customisable number of sides
 
 ### ⚙️ Setup
-- **Welcome messages** with customisable text and member mention
-- **Auto role** assignment on member join
+- **Welcome messages**: with customisable text and member mention
+- **Auto role**: assignment on member join
 - All settings configured **entirely through Discord**
 
 ---
@@ -214,7 +225,7 @@ After running the bot, follow these steps to invite it to your server:
 ### 2. Select Required Permissions
 Under **Bot Permissions**, check exactly the following:
 
-✅ Adminastrator
+✅ Administrator
 
 ### 3. Invite
 4. Copy the **Generated URL** at the bottom of the page.
@@ -236,32 +247,39 @@ WGBot/
 ├── .env                # Your bot token (never share this)
 ├── .gitignore          # Prevents token and unnecessary files from being pushed to GitHub
 ├── data/
-│   ├── warns.json      # Warning records (auto-generated)
-│   ├── ranks.json      # XP and rank data (auto-generated)
-│   ├── levelroles.json # Level role rewards (auto-generated)
-│   ├── autoreplies.json# Auto reply triggers and responses (auto-generated)
-│   └── youtube.json    # YouTube notification subscriptions (auto-generated)
+│   ├── warns.json          # Warning records (auto-generated)
+│   ├── ranks.json          # XP and rank data (auto-generated)
+│   ├── levelroles.json     # Level role rewards (auto-generated)
+│   ├── autoreplies.json    # Auto reply triggers and responses (auto-generated)
+│   ├── youtube.json        # YouTube notification subscriptions (auto-generated)
+│   ├── tickets.json        # Ticket system configuration (auto-generated)
+│   └── reactionroles.json  # Reaction role configuration (auto-generated)
 └── cogs/
-    ├── moderation.py   # ban, kick, unban, timeout, delete, lock, unlock, slowmode
-    ├── warns.py        # warn, warnings, clearwarnings
-    ├── voice.py        # mute-voice, unmute-voice, move
-    ├── roles.py        # role add/remove
-    ├── channels.py     # create-channel
-    ├── info.py         # userinfo, avatar, serverinfo, roles
-    ├── rank.py         # rank, leaderboard, XP system, levelrole
-    ├── autoreply.py    # autoreply add/remove/list
-    ├── youtube.py      # youtube add/remove/list
-    ├── fun.py          # roll
-    ├── welcome.py      # welcome messages and auto role on member join
-    ├── setup.py        # set-welcome-channel, set-welcome-message, set-auto-role, settings
-    ├── about.py        # about
-    └── help.py         # help
+    ├── moderation.py       # ban, kick, unban, timeout, delete, lock, unlock, slowmode
+    ├── warns.py            # warn, warnings, clearwarnings
+    ├── voice.py            # mute-voice, unmute-voice, move
+    ├── voice_limit.py      # voice-limit
+    ├── roles.py            # role add/remove
+    ├── role_colour.py      # role-colour
+    ├── channels.py         # create-channel
+    ├── info.py             # userinfo, avatar, serverinfo, roles
+    ├── rank.py             # rank, leaderboard, XP system, levelrole
+    ├── autoreply.py        # autoreply add/remove/list
+    ├── youtube.py          # youtube add/remove/list
+    ├── poll.py             # poll
+    ├── reaction_roles.py   # reactionrole add/remove/list
+    ├── fun.py              # roll
+    ├── welcome.py          # welcome messages and auto role on member join
+    ├── tickets.py          # ticket-setup, ticket, bugticket, feedbackticket, supportticket
+    ├── setup.py            # set-welcome-channel, set-welcome-message, set-auto-role, settings
+    ├── about.py            # about
+    └── help.py             # help
 ```
 
 ## ⚠️ Important Security Note
 Never share your `.env` file or commit it to a public repository. The `.gitignore` file already excludes it, but always double-check before pushing.
 
 ---
-*Made by Enes Ramazan Whitelineage*
+*Developed by Enes Ramazan Whitelineage*
 
 #### Contact & feedback: [Discord](https://discord.gg/vV8gEpHDXH) & [Reddit](https://www.reddit.com/r/WhitelineageDEV/)

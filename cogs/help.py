@@ -38,7 +38,8 @@ class Help(commands.Cog):
             value=(
                 "`/mute-voice <user>` — Server mutes a member in voice.\n"
                 "`/unmute-voice <user>` — Removes server mute from a member.\n"
-                "`/move <user> <channel>` — Moves a member to another voice channel."
+                "`/move <user> <channel>` — Moves a member to another voice channel.\n"
+                "`/voice-limit <channel> <limit>` — Sets the user limit for a voice channel (0 = unlimited)."
             ),
             inline=False
         )
@@ -46,7 +47,8 @@ class Help(commands.Cog):
         embed.add_field(
             name="🏷️ Roles",
             value=(
-                "`/role <user> <role>` — Adds or removes a role from a member."
+                "`/role <user> <role>` — Adds or removes a role from a member.\n"
+                "`/role-colour <role> <hex>` — Changes the colour of a role using a HEX code."
             ),
             inline=False
         )
@@ -79,6 +81,25 @@ class Help(commands.Cog):
                 "`/levelrole add <level> <role>` — Assigns a role reward for a level.\n"
                 "`/levelrole remove <level>` — Removes the role reward for a level.\n"
                 "`/levelrole list` — Lists all level role rewards."
+            ),
+            inline=False
+        )
+
+        embed.add_field(
+            name="📊 Poll",
+            value=(
+                "`/poll <question> <options>` — Creates a reaction-based poll. Separate options with `;`.\n"
+                "Example: `/poll \"Best colour?\" \"Red ; Blue ; Green\"`"
+            ),
+            inline=False
+        )
+
+        embed.add_field(
+            name="🎭 Reaction Roles (Admin only)",
+            value=(
+                "`/reactionrole add <message_id> <emoji> <role>` — Adds a reaction role to a message.\n"
+                "`/reactionrole remove <message_id> <emoji>` — Removes a reaction role.\n"
+                "`/reactionrole list` — Lists all reaction roles in the server."
             ),
             inline=False
         )
@@ -121,6 +142,19 @@ class Help(commands.Cog):
                 "`/youtube remove <tag>` — Removes a YouTube notification by tag.\n"
                 "`/youtube list` — Lists all subscriptions.\n"
 "\n💡 **How to find a YouTube channel ID:** Go to the channel → **About** → **Share** → **Copy channel ID**."
+            ),
+            inline=False
+        )
+
+        embed.add_field(
+            name="🎫 Tickets",
+            value=(
+                "`/ticket-setup <ticket_channel> <staff_role> <log_channel> [ping_role]` — Configures the ticket system.\n"
+                "`/ticket` — Creates a general ticket embed. (Staff only)\n"
+                "`/bugticket` — Creates a bug report embed. (Staff only)\n"
+                "`/feedbackticket` — Creates a feedback embed. (Staff only)\n"
+                "`/supportticket` — Creates a support request embed. (Staff only)\n"
+                "`/ticket-config` — Shows current ticket system configuration."
             ),
             inline=False
         )

@@ -33,8 +33,9 @@ class Moderation(commands.Cog):
         if error:
             await interaction.response.send_message(error, ephemeral=True)
             return
+        await interaction.response.defer(ephemeral=False)
         await user.ban(reason=reason)
-        await interaction.response.send_message(f"🔨 {user.mention} has been banned. Reason: {reason}", ephemeral=False)
+        await interaction.followup.send(f"🔨 {user.mention} has been banned. Reason: {reason}", ephemeral=False)
 
     @app_commands.command(name="kick", description="Kicks a member from the server.")
     @app_commands.describe(user="The member to kick", reason="Reason for the kick")
@@ -44,8 +45,9 @@ class Moderation(commands.Cog):
         if error:
             await interaction.response.send_message(error, ephemeral=True)
             return
+        await interaction.response.defer(ephemeral=False)
         await user.kick(reason=reason)
-        await interaction.response.send_message(f"👢 {user.mention} has been kicked. Reason: {reason}", ephemeral=False)
+        await interaction.followup.send(f"👢 {user.mention} has been kicked. Reason: {reason}", ephemeral=False)
 
     @app_commands.command(name="unban", description="Unbans a user from the server.")
     @app_commands.describe(user_id="The ID of the user to unban")
@@ -68,9 +70,10 @@ class Moderation(commands.Cog):
         if error:
             await interaction.response.send_message(error, ephemeral=True)
             return
+        await interaction.response.defer(ephemeral=False)
         duration = timedelta(minutes=minutes)
         await user.timeout(duration, reason=reason)
-        await interaction.response.send_message(f"⏱️ {user.mention} has been timed out for {minutes} minute(s). Reason: {reason}", ephemeral=False)
+        await interaction.followup.send(f"⏱️ {user.mention} has been timed out for {minutes} minute(s). Reason: {reason}", ephemeral=False)
 
     @app_commands.command(name="delete", description="Deletes a number of messages from the channel.")
     @app_commands.describe(amount="Number of messages to delete")
