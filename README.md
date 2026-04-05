@@ -1,3 +1,5 @@
+[English](README.md) | [Türkçe](README.tr.md)
+
 # WGBot (v1.1.1)
 An open source Discord moderation bot with slash commands, supporting ban, timeout, warn, rank system, voice management, and more. Configured entirely through Discord without touching any config files.
 
