@@ -283,4 +283,4 @@ WGBot/
 ---
 *Enes Ramazan Whitelineage tarafından geliştirilmiştir.*
 
-#### İletişim ve geri bildirim: [Discord](https://discord.gg/vV8gEpHDXH) & [Reddit](https://www.reddit.com/r/WhitelineageDEV/)
+#### İletişim ve geri bildirim: [Reddit](https://www.reddit.com/r/WhitelineageDEV/)
