@@ -1,9 +1,9 @@
 {
   "bot_name": "WGBot",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "developer": "Enes Ramazan Whitelineage",
   "license": "MIT License",
-  "description": "Open source Discord moderation bot with slash commands.",
+  "description": "Open source Discord moderation and music bot with slash commands.",
   "features": [
     "Slash commands for easy moderation",
     "Ban, kick, unban & timeout members with hierarchy checks",
@@ -16,7 +16,8 @@
     "Auto reply system with multiple responses per trigger",
     "YouTube notifications via RSS — no API key required",
     "Welcome messages & auto role assignment",
-    "Channel creation (text & voice)",
+    "Channel creation & deletion (text & voice)",
+    "Music player with queue, skip, loop and saved playlists (YouTube & SoundCloud)",
     "Server, member & role info commands",
     "Dice roller",
     "Ticket system with bug reports, feedback and support requests"

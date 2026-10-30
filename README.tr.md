@@ -1,6 +1,6 @@
-[English](README.md) | [Türkçe](README.tr.md)
+[English](README.md) | [Türkçe](README.tr.md) | [Değişiklik Günlüğü](CHANGELOG.md)
 
-# WGBot (v1.2.0)
+# WGBot (v1.3.0)
 Slash komutlarıyla çalışan açık kaynaklı bir Discord moderasyon botu. Ban, timeout, uyarı sistemi, rank, ses yönetimi, tepki rolleri, anketler ve daha fazlasını destekler. Hiçbir dosyaya dokunmadan tamamen Discord üzerinden yapılandırılır.
 
 ## ⚠️ Botu yalnızca sunucuna eklemek istiyorsan bu bağlantıyı kullanıp aşağıdaki adımları atlayabilirsin: [![Discord Davet](https://img.shields.io/badge/Discord-Sunucuya_Ekle-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/oauth2/authorize?client_id=1485221526084128910&permissions=8&integration_type=0&scope=bot)
@@ -27,6 +27,7 @@ Slash komutlarıyla çalışan açık kaynaklı bir Discord moderasyon botu. Ban
 
 ### 📁 Kanallar
 - Slash komutla **metin veya ses kanalı oluşturma**
+- `/delete-channel` ile onay butonlu **kanal silme**
 
 ### ℹ️ Bilgi
 - **Üye bilgisi**: katılma tarihi, roller, hesap yaşı ve daha fazlası
@@ -50,6 +51,16 @@ Slash komutlarıyla çalışan açık kaynaklı bir Discord moderasyon botu. Ban
 - Bildirimler embed ve isteğe bağlı rol pingi ile belirlenen kanala gönderilir
 - Kolay yönetim için **özel etiketlerle** tanımlama
 - RSS aracılığıyla her **5 dakikada bir** yeni video kontrolü (API anahtarı gerekmez)
+- Rol pingi güvenilir şekilde çalışır, rol etiketlenebilir değilse `/youtube add` seni uyarır
+- `/youtube test <etiket>` ile kanalı ve pingi denemek için test bildirimi gönderebilirsin
+- Aynı anda yüklenen birden fazla video sırayla duyurulur, duyurulmuş videolar tekrar gönderilmez
+
+### 🎵 Müzik
+- Ses kanalında **YouTube ve SoundCloud** üzerinden şarkı çalma (isimle arama veya bağlantı yapıştırma)
+- **Kuyruk** sistemi: atlama, duraklatma, devam ettirme, durdurma, kuyruktan çıkarma, temizleme, karıştırma, döngü (şarkı / kuyruk) ve ses seviyesi
+- YouTube / SoundCloud **oynatma listesi bağlantıları** tüm şarkıları tek seferde ekler
+- **Kayıtlı sunucu oynatma listeleri**: `/playlist save`, `/playlist add`, `/playlist play`, `/playlist list`, `/playlist delete`
+- Kuyruk bittiğinde veya herkes çıktığında otomatik olarak kanaldan ayrılır
 
 ### 📊 Anket
 - En fazla 9 seçenekle **tepki tabanlı anket** oluşturma
@@ -92,6 +103,11 @@ Botun çalışması için bir **Discord Bot Token** gerekir. Nasıl alacağını
    - Kaydet ve kapat.
 
 > Diğer tüm ayarlar (karşılama kanalı, otomatik rol) Discord'da `/set-welcome-channel`, `/set-welcome-message` ve `/set-auto-role` komutlarıyla yapılandırılır. Herhangi bir dosyayı düzenlemeye gerek yok.
+
+### Müzik gereksinimleri
+Müzik komutları için botun çalıştığı makinede **FFmpeg** kurulu olmalıdır (Debian/Ubuntu: `sudo apt install ffmpeg`, Windows: `winget install ffmpeg`, macOS: `brew install ffmpeg`). `yt-dlp`, `requirements.txt` ile kurulur; YouTube oynatma bozulursa `pip install -U yt-dlp` ile güncelle (YouTube'daki son değişiklikler Deno veya Node.js gibi bir JavaScript çalışma ortamı da gerektirebilir, yt-dlp belgelerine bak).
+
+YouTube bottan "bot olmadığını doğrula" diye giriş isterse (VPS/hosting IP'lerinde yaygın), çerezlerini `cookies.txt` olarak dışa aktar ve `.env` dosyana `YTDLP_COOKIES=cookies.txt_yolu` ekle.
 
 ### Privileged Intent'leri Etkinleştir
 [Discord Developer Portal](https://discord.com/developers/applications)'a git, uygulamanı seç, **Bot** sekmesine tıkla ve şunları etkinleştir:
@@ -253,6 +269,7 @@ WGBot/
 │   ├── levelroles.json     # Seviye rol ödülleri (otomatik oluşturulur)
 │   ├── autoreplies.json    # Otomatik yanıt tetikleyicileri ve yanıtları (otomatik oluşturulur)
 │   ├── youtube.json        # YouTube bildirim abonelikleri (otomatik oluşturulur)
+│   ├── playlists.json      # Kayıtlı müzik oynatma listeleri (otomatik oluşturulur)
 │   ├── tickets.json        # Ticket sistemi yapılandırması (otomatik oluşturulur)
 │   └── reactionroles.json  # Tepki rol yapılandırması (otomatik oluşturulur)
 └── cogs/
@@ -262,11 +279,12 @@ WGBot/
     ├── voice_limit.py      # voice-limit
     ├── roles.py            # role ekle/çıkar
     ├── role_colour.py      # role-colour
-    ├── channels.py         # create-channel
+    ├── channels.py         # create-channel, delete-channel
     ├── info.py             # userinfo, avatar, serverinfo, roles
     ├── rank.py             # rank, leaderboard, XP sistemi, levelrole
     ├── autoreply.py        # autoreply ekle/çıkar/listele
-    ├── youtube.py          # youtube ekle/çıkar/listele
+    ├── youtube.py          # youtube ekle/çıkar/listele/test
+    ├── music.py            # music play/skip/queue/..., playlist save/add/play/list/delete
     ├── poll.py             # poll
     ├── reaction_roles.py   # reactionrole ekle/çıkar/listele
     ├── fun.py              # roll
@@ -283,4 +301,4 @@ WGBot/
 ---
 *Enes Ramazan Whitelineage tarafından geliştirilmiştir.*
 
-#### İletişim ve geri bildirim: [Reddit](https://www.reddit.com/r/WhitelineageDEV/)
+#### İletişim ve geri bildirim: [Discord](https://discord.gg/vV8gEpHDXH) & [Reddit](https://www.reddit.com/r/WhitelineageDEV/)

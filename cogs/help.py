@@ -45,6 +45,37 @@ class Help(commands.Cog):
         )
 
         embed.add_field(
+            name="🎵 Music",
+            value=(
+                "`/music play <query>` — Plays a song or adds it to the queue. Accepts a name or a YouTube/SoundCloud link (playlist links too).\n"
+                "`/music pause` / `/music resume` — Pauses or resumes.\n"
+                "`/music skip` — Skips the current song.\n"
+                "`/music stop` — Stops and clears the queue.\n"
+                "`/music queue [page]` — Shows the queue.\n"
+                "`/music nowplaying` — Shows the current song.\n"
+                "`/music remove <position>` — Removes a song from the queue.\n"
+                "`/music clear` — Clears the queue.\n"
+                "`/music shuffle` — Shuffles the queue.\n"
+                "`/music loop <mode>` — Off, current song or whole queue.\n"
+                "`/music volume <1-100>` — Sets the volume.\n"
+                "`/music join` / `/music leave` — Joins or leaves your voice channel."
+            ),
+            inline=False
+        )
+
+        embed.add_field(
+            name="📚 Playlists",
+            value=(
+                "`/playlist save <name>` — Saves the current song and queue as a playlist.\n"
+                "`/playlist add <name> <query>` — Adds a song to a playlist.\n"
+                "`/playlist play <name> [shuffle]` — Queues a saved playlist.\n"
+                "`/playlist list` — Lists saved playlists.\n"
+                "`/playlist delete <name>` — Deletes a playlist."
+            ),
+            inline=False
+        )
+
+        embed.add_field(
             name="🏷️ Roles",
             value=(
                 "`/role <user> <role>` — Adds or removes a role from a member.\n"
@@ -141,6 +172,7 @@ class Help(commands.Cog):
                 "`/youtube add <tag> <channel_id> <notify_channel> [ping_role]` — Adds a YouTube notification. Tag is a short name to identify it (e.g. `iu`).\n"
                 "`/youtube remove <tag>` — Removes a YouTube notification by tag.\n"
                 "`/youtube list` — Lists all subscriptions.\n"
+                "`/youtube test <tag>` — Sends a test notification (checks the channel and role ping).\n"
 "\n💡 **How to find a YouTube channel ID:** Go to the channel → **About** → **Share** → **Copy channel ID**."
             ),
             inline=False

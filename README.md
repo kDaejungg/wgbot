@@ -1,6 +1,6 @@
-[English](README.md) | [Türkçe](README.tr.md)
+[English](README.md) | [Türkçe](README.tr.md) | [Changelog](CHANGELOG.md)
 
-# WGBot (v1.2.0)
+# WGBot (v1.3.0)
 An open source Discord moderation bot with slash commands, supporting ban, timeout, warn, rank system, voice management, reaction roles, polls, and more. Configured entirely through Discord without touching any config files.
 
 ## ⚠️ If you only want to add the bot to your server, use this link and ignore the steps below: [![Discord Invite](https://img.shields.io/badge/Discord-Add_to_Server-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/oauth2/authorize?client_id=1485221526084128910&permissions=8&integration_type=0&scope=bot)
@@ -27,6 +27,7 @@ An open source Discord moderation bot with slash commands, supporting ban, timeo
 
 ### 📁 Channels
 - **Create**:text or voice channels via slash command
+- **Delete**:any channel via `/delete-channel`, with a confirmation button
 
 ### ℹ️ Info
 - **Member info**: joined date, roles, account age and more
@@ -50,6 +51,16 @@ An open source Discord moderation bot with slash commands, supporting ban, timeo
 - Notifications sent to a designated channel with an embed and optional role ping
 - Identified by **custom tags** for easy management
 - Checks for new videos every **5 minutes** via RSS (no API key required)
+- Role pings work reliably, and `/youtube add` warns you if the role is not mentionable
+- `/youtube test <tag>` sends a test notification to verify the channel and ping
+- Several uploads at once are announced in order, and already announced videos are never repeated
+
+### 🎵 Music
+- Plays songs from **YouTube and SoundCloud** (search by name or paste a link) in your voice channel
+- **Queue** with skip, pause, resume, stop, remove, clear, shuffle, loop (song / queue) and volume
+- YouTube / SoundCloud **playlist links** add every song at once
+- **Saved server playlists**: `/playlist save`, `/playlist add`, `/playlist play`, `/playlist list`, `/playlist delete`
+- Leaves automatically when the queue ends or everyone has left
 
 ### 📊 Poll
 - Create **reaction-based polls** with up to 9 options
@@ -91,6 +102,11 @@ The bot needs a **Discord Bot Token** to run. If you don't know how to get one, 
    - Save and close the file.
 
 > All other settings (welcome channel, auto role) are configured directly in Discord via the `/set-welcome-channel`, `/set-welcome-message`, and `/set-auto-role` commands. No need to edit any files.
+
+### Music requirements
+The music commands need **FFmpeg** installed on the machine that runs the bot (`sudo apt install ffmpeg` on Debian/Ubuntu, `winget install ffmpeg` on Windows, `brew install ffmpeg` on macOS). `yt-dlp` is installed by `requirements.txt`; if YouTube playback stops working, update it with `pip install -U yt-dlp` (recent YouTube changes may also require a JavaScript runtime such as Deno or Node.js, see the yt-dlp docs).
+
+If YouTube asks the bot to "sign in to confirm you're not a bot" (common on VPS/hosting IPs), export your cookies to a `cookies.txt` file and add `YTDLP_COOKIES=path/to/cookies.txt` to your `.env`.
 
 ### Enable Privileged Intents
 Go to the [Discord Developer Portal](https://discord.com/developers/applications), select your application, click the **Bot** tab, and enable the following:
@@ -252,6 +268,7 @@ WGBot/
 │   ├── levelroles.json     # Level role rewards (auto-generated)
 │   ├── autoreplies.json    # Auto reply triggers and responses (auto-generated)
 │   ├── youtube.json        # YouTube notification subscriptions (auto-generated)
+│   ├── playlists.json      # Saved music playlists (auto-generated)
 │   ├── tickets.json        # Ticket system configuration (auto-generated)
 │   └── reactionroles.json  # Reaction role configuration (auto-generated)
 └── cogs/
@@ -261,11 +278,12 @@ WGBot/
     ├── voice_limit.py      # voice-limit
     ├── roles.py            # role add/remove
     ├── role_colour.py      # role-colour
-    ├── channels.py         # create-channel
+    ├── channels.py         # create-channel, delete-channel
     ├── info.py             # userinfo, avatar, serverinfo, roles
     ├── rank.py             # rank, leaderboard, XP system, levelrole
     ├── autoreply.py        # autoreply add/remove/list
-    ├── youtube.py          # youtube add/remove/list
+    ├── youtube.py          # youtube add/remove/list/test
+    ├── music.py            # music play/skip/queue/..., playlist save/add/play/list/delete
     ├── poll.py             # poll
     ├── reaction_roles.py   # reactionrole add/remove/list
     ├── fun.py              # roll
@@ -282,4 +300,4 @@ Never share your `.env` file or commit it to a public repository. The `.gitignor
 ---
 *Developed by Enes Ramazan Whitelineage*
 
-#### Contact & feedback: [Reddit](https://www.reddit.com/r/WhitelineageDEV/)
+#### Contact & feedback: [Discord](https://discord.gg/vV8gEpHDXH) & [Reddit](https://www.reddit.com/r/WhitelineageDEV/)
