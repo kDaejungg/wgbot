@@ -4,6 +4,7 @@ import json
 import os
 import random
 import re
+import shlex
 import time
 from dataclasses import dataclass
 from typing import Optional
@@ -23,16 +24,29 @@ MAX_SAVED_TRACKS = 100     # songs per saved playlist
 IDLE_TIMEOUT = 180         # seconds of silence before the bot leaves the voice channel
 ALONE_TIMEOUT = 30         # seconds before leaving when everyone else has left
 STREAM_URL_TTL = 600       # stream URLs expire, so a resolved URL is only reused for a short time
+EARLY_END_SECONDS = 5      # a long song that ends within this many seconds is treated as a failed stream
+EARLY_END_MIN_DURATION = 15
 
 # Only these sites are accepted as links. yt-dlp can fetch almost any URL, and on a public
 # bot that would let members make the host request arbitrary addresses.
 ALLOWED_HOSTS = ("youtube.com", "youtu.be", "soundcloud.com")
 URL_RE = re.compile(r"^https?://", re.IGNORECASE)
 
-FFMPEG_OPTIONS = {
-    "before_options": "-reconnect 1 -reconnect_streaming 1 -reconnect_delay_max 5",
-    "options": "-vn",
-}
+FFMPEG_BEFORE = "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"
+
+
+def ffmpeg_options(headers: Optional[dict] = None) -> dict:
+    """FFmpeg arguments for a stream. YouTube's stream URLs often answer 403 unless FFmpeg sends
+    the same HTTP headers (User-Agent etc.) that yt-dlp used to obtain them."""
+    before = FFMPEG_BEFORE
+    headers = dict(headers or {})
+    user_agent = next((headers.pop(key) for key in list(headers) if key.lower() == "user-agent"), None)
+    if user_agent:
+        before += f" -user_agent {shlex.quote(user_agent)}"
+    if headers:
+        joined = "".join(f"{key}: {value}\r\n" for key, value in headers.items())
+        before += f" -headers {shlex.quote(joined)}"
+    return {"before_options": before, "options": "-vn"}
 
 
 class MusicError(Exception):
@@ -47,6 +61,8 @@ class Track:
     requester_id: int
     stream_url: Optional[str] = None
     resolved_at: float = 0.0
+    headers: Optional[dict] = None  # HTTP headers yt-dlp used for the stream URL
+    retries: int = 0                # how often the stream was re-resolved after failing right away
 
 
 class GuildPlayer:
@@ -56,9 +72,13 @@ class GuildPlayer:
         self.loop = "off"          # off | track | queue
         self.volume = 0.5
         self.starting = False      # True while the next track is being resolved/started
+        self.started_at = 0.0      # time.monotonic() when the current track started playing
         self.skipped = False       # True when the current track was ended by /music skip or stop
         self.text_channel_id: Optional[int] = None
         self.idle_task: Optional[asyncio.Task] = None
+        self.history: collections.deque = collections.deque(maxlen=50)  # songs that already played, for "previous"
+        self.going_back = False    # True while /music previous (or the button) is switching to the last song
+        self.panel: Optional[tuple] = None  # (channel_id, message_id) of the message that currently has the buttons
 
 
 # ---------------------------------------------------------------- helpers
@@ -98,6 +118,10 @@ def make_ytdl(extra: Optional[dict] = None) -> yt_dlp.YoutubeDL:
     cookies = os.getenv("YTDLP_COOKIES")
     if cookies and os.path.exists(cookies):
         options["cookiefile"] = cookies
+    # Optional: comma separated YouTube player clients for yt-dlp (see the yt-dlp docs for valid names).
+    clients = os.getenv("YTDLP_YOUTUBE_CLIENTS")
+    if clients:
+        options["extractor_args"] = {"youtube": {"player_client": [c.strip() for c in clients.split(",") if c.strip()]}}
     if extra:
         options.update(extra)
     return yt_dlp.YoutubeDL(options)
@@ -146,6 +170,7 @@ def extract_tracks(query: str, requester_id: int):
         requester_id=requester_id,
         stream_url=info.get("url"),
         resolved_at=time.time(),
+        headers=info.get("http_headers"),
     )
     return None, [track]
 
@@ -181,6 +206,67 @@ def track_to_dict(track: Track) -> dict:
     return {"title": track.title, "url": track.url, "duration": track.duration}
 
 
+# ---------------------------------------------------------------- player buttons
+
+class PlayerControls(discord.ui.View):
+    """Previous / pause-resume / next / stop buttons under the now-playing message."""
+
+    def __init__(self, cog: "Music", guild_id: int, paused: bool = False):
+        super().__init__(timeout=None)
+        self.cog = cog
+        self.guild_id = guild_id
+        self.pause_button.emoji = "▶️" if paused else "⏸️"
+
+    @discord.ui.button(emoji="⏮️", style=discord.ButtonStyle.secondary)
+    async def previous_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        active = await self.cog._require_active(interaction)
+        if active is None:
+            return
+        vc, player = active
+        title = await self.cog._do_previous(interaction.guild, vc, player)
+        if title is None:
+            await interaction.response.send_message("❌ There is no previous song.", ephemeral=True)
+            return
+        await interaction.response.defer()  # the new now-playing message announces the change
+
+    @discord.ui.button(emoji="⏸️", style=discord.ButtonStyle.primary)
+    async def pause_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        active = await self.cog._require_active(interaction)
+        if active is None:
+            return
+        vc, _ = active
+        if vc.is_playing():
+            vc.pause()
+            button.emoji = "▶️"
+        elif vc.is_paused():
+            vc.resume()
+            button.emoji = "⏸️"
+        else:
+            await interaction.response.send_message("❌ Nothing is playing.", ephemeral=True)
+            return
+        await interaction.response.edit_message(view=self)
+
+    @discord.ui.button(emoji="⏭️", style=discord.ButtonStyle.secondary)
+    async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        active = await self.cog._require_active(interaction)
+        if active is None:
+            return
+        vc, player = active
+        if self.cog._do_skip(vc, player) is None:
+            await interaction.response.send_message("❌ Nothing is playing.", ephemeral=True)
+            return
+        await interaction.response.defer()
+
+    @discord.ui.button(emoji="⏹️", style=discord.ButtonStyle.danger)
+    async def stop_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        active = await self.cog._require_active(interaction)
+        if active is None:
+            return
+        vc, player = active
+        self.cog._do_stop(vc, player)
+        await interaction.response.send_message(f"⏹️ Stopped by {interaction.user.mention}.", allowed_mentions=discord.AllowedMentions.none())
+
+
 # ---------------------------------------------------------------- cog
 
 class Music(commands.Cog):
@@ -210,25 +296,50 @@ class Music(commands.Cog):
         if player and player.idle_task:
             player.idle_task.cancel()
 
-    async def _say(self, player: GuildPlayer, content=None, embed=None):
+    async def _say(self, player: GuildPlayer, content=None, embed=None, view=None):
         channel = self.bot.get_channel(player.text_channel_id) if player.text_channel_id else None
+        if channel is None:
+            return None
+        kwargs = {"view": view} if view is not None else {}
+        try:
+            return await channel.send(content, embed=embed, allowed_mentions=discord.AllowedMentions.none(), **kwargs)
+        except discord.HTTPException:
+            return None
+
+    async def _clear_panel(self, player: GuildPlayer):
+        """Removes the buttons from the old now-playing message so only the newest one is active."""
+        reference, player.panel = player.panel, None
+        if not reference:
+            return
+        channel = self.bot.get_channel(reference[0])
         if channel is None:
             return
         try:
-            await channel.send(content, embed=embed, allowed_mentions=discord.AllowedMentions.none())
+            await channel.get_partial_message(reference[1]).edit(view=None)
         except discord.HTTPException:
             pass
+
+    async def _reply_with_panel(self, interaction: discord.Interaction, player: GuildPlayer, content=None, embed=None):
+        """Answers a deferred interaction with a message that has the player buttons."""
+        await self._clear_panel(player)
+        view = PlayerControls(self, interaction.guild.id, paused=bool(interaction.guild.voice_client and interaction.guild.voice_client.is_paused()))
+        message = await interaction.followup.send(
+            content, embed=embed, view=view, wait=True, allowed_mentions=discord.AllowedMentions.none())
+        player.panel = (interaction.channel_id, message.id)
 
     # ------------------------------------------------------------ playback engine
 
     def _next_track(self, player: GuildPlayer) -> Optional[Track]:
         previous = player.current
-        if previous is not None:
+        if previous is not None and not player.going_back:
             if player.loop == "track" and not player.skipped:
                 return previous
+            player.history.append(previous)
             if player.loop == "queue":
                 player.queue.append(previous)
+        # When going back, the current song was already put back at the front of the queue.
         player.skipped = False
+        player.going_back = False
         return player.queue.popleft() if player.queue else None
 
     async def _stream_url(self, track: Track) -> str:
@@ -236,6 +347,7 @@ class Music(commands.Cog):
             return track.stream_url
         info = await asyncio.to_thread(extract_stream, track.url)
         track.stream_url = info["url"]
+        track.headers = info.get("http_headers")
         track.resolved_at = time.time()
         if not track.duration:
             track.duration = info.get("duration")
@@ -257,12 +369,34 @@ class Music(commands.Cog):
                     self._cleanup(guild.id)
                     return
 
-                track = self._next_track(player)
+                previous = player.current
+                ended_early = (
+                    previous is not None and not player.skipped and not player.going_back
+                    and player.started_at > 0
+                    and time.monotonic() - player.started_at < EARLY_END_SECONDS
+                    and (previous.duration or 0) > EARLY_END_MIN_DURATION
+                )
+                if ended_early and previous.retries < 1:
+                    # e.g. 403 from YouTube: get a fresh stream URL and try the same song once more.
+                    previous.retries += 1
+                    previous.stream_url = None
+                    print(f"[music] '{previous.title}' ended right after starting, retrying with a fresh stream URL.")
+                    track = previous
+                else:
+                    if ended_early:
+                        await self._say(player, f"❌ Couldn't stream **{discord.utils.escape_markdown(previous.title)}** (YouTube rejected the stream). Skipping.")
+                    if previous is not None:
+                        previous.retries = 0
+                    track = self._next_track(player)
                 if track is None:
                     player.current = None
+                    await self._clear_panel(player)
                     player.idle_task = asyncio.create_task(self._idle_disconnect(guild.id))
                     return
 
+                repeated = track is previous  # loop=track: same song again, keep the buttons where they are
+                if not repeated:
+                    await self._clear_panel(player)
                 player.current = track
                 try:
                     stream_url = await self._stream_url(track)
@@ -275,7 +409,7 @@ class Music(commands.Cog):
                     problem = None
 
                 if problem:
-                    player.skipped = True  # don't retry this track forever with loop=track
+                    player.current = None  # forget the broken track so loop modes can't retry it forever
                     await self._say(player, f"❌ Couldn't play **{discord.utils.escape_markdown(track.title)}** ({problem}). Skipping.")
                     continue
 
@@ -284,12 +418,17 @@ class Music(commands.Cog):
                     return
 
                 source = discord.PCMVolumeTransformer(
-                    discord.FFmpegPCMAudio(stream_url, **FFMPEG_OPTIONS),
+                    discord.FFmpegPCMAudio(stream_url, **ffmpeg_options(track.headers)),
                     volume=player.volume,
                 )
                 guild.voice_client.play(source, after=lambda error, gid=guild.id: self._after(gid, error))
-                if announce:
-                    await self._say(player, embed=self._now_playing_embed(player, "▶️ Now playing"))
+                player.started_at = time.monotonic()
+                if announce and not repeated:
+                    message = await self._say(
+                        player, embed=self._now_playing_embed(player, "▶️ Now playing"),
+                        view=PlayerControls(self, guild.id))
+                    if message:
+                        player.panel = (message.channel.id, message.id)
                 return
         finally:
             player.starting = False
@@ -312,8 +451,48 @@ class Music(commands.Cog):
         vc = guild.voice_client
         if vc and not vc.is_playing() and not vc.is_paused() and player.current is None and not player.starting:
             await self._say(player, "👋 Nothing left to play, leaving the voice channel.")
+            await self._clear_panel(player)
             self._cleanup(guild_id)
             await vc.disconnect()
+
+    # ------------------------------------------------------------ actions shared by commands and buttons
+
+    def _do_skip(self, vc: discord.VoiceClient, player: GuildPlayer) -> Optional[str]:
+        """Returns the skipped title, or None if nothing was playing."""
+        if player.current is None or not (vc.is_playing() or vc.is_paused()):
+            return None
+        title = player.current.title
+        player.skipped = True
+        vc.stop()  # the after-callback starts the next track
+        return title
+
+    def _do_stop(self, vc: discord.VoiceClient, player: GuildPlayer):
+        player.queue.clear()
+        player.loop = "off"
+        player.skipped = True
+        if vc.is_playing() or vc.is_paused():
+            vc.stop()
+
+    async def _do_previous(self, guild: discord.Guild, vc: discord.VoiceClient, player: GuildPlayer) -> Optional[str]:
+        """Goes back to the song that played before. Returns its title, or None if there is none."""
+        if not player.history:
+            return None
+        previous = player.history.pop()
+        if player.loop == "queue":
+            # It was appended to the end of the queue when it finished; it is about to play now.
+            for index in range(len(player.queue) - 1, -1, -1):
+                if player.queue[index] is previous:
+                    del player.queue[index]
+                    break
+        if player.current is not None:
+            player.queue.appendleft(player.current)  # the current song plays again after the previous one
+        player.queue.appendleft(previous)
+        player.going_back = True
+        if vc.is_playing() or vc.is_paused():
+            vc.stop()  # the after-callback starts `previous`
+        elif not player.starting:
+            await self._advance(guild, announce=True)
+        return previous.title
 
     # ------------------------------------------------------------ embeds
 
@@ -401,7 +580,7 @@ class Music(commands.Cog):
         started = player.current is tracks[0]
         if len(tracks) == 1:
             if started:
-                await interaction.followup.send(embed=self._now_playing_embed(player, "▶️ Now playing"))
+                await self._reply_with_panel(interaction, player, embed=self._now_playing_embed(player, "▶️ Now playing"))
             else:
                 embed = discord.Embed(title="➕ Added to queue", description=link(tracks[0], 90), colour=discord.Colour.blurple())
                 embed.add_field(name="Position", value=str(position), inline=True)
@@ -412,6 +591,8 @@ class Music(commands.Cog):
         text = f"➕ Added **{len(tracks)}** songs from **{discord.utils.escape_markdown(source_name or 'playlist')}**."
         if started:
             text += f"\n▶️ Now playing: {link(player.current)}"
+            await self._reply_with_panel(interaction, player, content=text)
+            return
         await interaction.followup.send(text, allowed_mentions=discord.AllowedMentions.none())
 
     # ------------------------------------------------------------ voice events
@@ -436,6 +617,7 @@ class Music(commands.Cog):
                     player = self.players.get(guild.id)
                     if player:
                         await self._say(player, "👋 Everyone left, so I left too.")
+                        await self._clear_panel(player)
                     self._cleanup(guild.id)
                     await vc.disconnect()
 
@@ -502,14 +684,25 @@ class Music(commands.Cog):
         if active is None:
             return
         vc, player = active
-        if player.current is None or not (vc.is_playing() or vc.is_paused()):
+        title = self._do_skip(vc, player)
+        if title is None:
             await interaction.response.send_message("❌ Nothing is playing.", ephemeral=True)
             return
-        title = player.current.title
-        player.skipped = True
-        vc.stop()  # the after-callback starts the next track
         await interaction.response.send_message(
             f"⏭️ Skipped **{discord.utils.escape_markdown(title)}**.", allowed_mentions=discord.AllowedMentions.none())
+
+    @music.command(name="previous", description="Goes back to the previous song.")
+    async def previous(self, interaction: discord.Interaction):
+        active = await self._require_active(interaction)
+        if active is None:
+            return
+        vc, player = active
+        title = await self._do_previous(interaction.guild, vc, player)
+        if title is None:
+            await interaction.response.send_message("❌ There is no previous song.", ephemeral=True)
+            return
+        await interaction.response.send_message(
+            f"⏮️ Going back to **{discord.utils.escape_markdown(title)}**.", allowed_mentions=discord.AllowedMentions.none())
 
     @music.command(name="stop", description="Stops the music and clears the queue.")
     async def stop(self, interaction: discord.Interaction):
@@ -517,11 +710,7 @@ class Music(commands.Cog):
         if active is None:
             return
         vc, player = active
-        player.queue.clear()
-        player.loop = "off"
-        player.skipped = True
-        if vc.is_playing() or vc.is_paused():
-            vc.stop()
+        self._do_stop(vc, player)
         await interaction.response.send_message("⏹️ Stopped and cleared the queue.")
 
     @music.command(name="leave", description="Disconnects the bot from the voice channel.")
@@ -529,7 +718,8 @@ class Music(commands.Cog):
         active = await self._require_active(interaction)
         if active is None:
             return
-        vc, _ = active
+        vc, player = active
+        await self._clear_panel(player)
         self._cleanup(interaction.guild.id)
         await vc.disconnect()
         await interaction.response.send_message("👋 Disconnected.")
@@ -540,7 +730,8 @@ class Music(commands.Cog):
         if player is None or player.current is None:
             await interaction.response.send_message("❌ Nothing is playing.", ephemeral=True)
             return
-        await interaction.response.send_message(embed=self._now_playing_embed(player, "🎵 Now playing"))
+        await interaction.response.defer()
+        await self._reply_with_panel(interaction, player, embed=self._now_playing_embed(player, "🎵 Now playing"))
 
     @music.command(name="queue", description="Shows the queue.")
     @app_commands.describe(page="Page number")

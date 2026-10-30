@@ -1,6 +1,6 @@
 [English](README.md) | [Türkçe](README.tr.md) | [Changelog](CHANGELOG.md)
 
-# WGBot (v1.3.0)
+# WGBot (v1.3.1)
 An open source Discord moderation bot with slash commands, supporting ban, timeout, warn, rank system, voice management, reaction roles, polls, and more. Configured entirely through Discord without touching any config files.
 
 ## ⚠️ If you only want to add the bot to your server, use this link and ignore the steps below: [![Discord Invite](https://img.shields.io/badge/Discord-Add_to_Server-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/oauth2/authorize?client_id=1485221526084128910&permissions=8&integration_type=0&scope=bot)
@@ -57,7 +57,8 @@ An open source Discord moderation bot with slash commands, supporting ban, timeo
 
 ### 🎵 Music
 - Plays songs from **YouTube and SoundCloud** (search by name or paste a link) in your voice channel
-- **Queue** with skip, pause, resume, stop, remove, clear, shuffle, loop (song / queue) and volume
+- **Queue** with skip, previous, pause, resume, stop, remove, clear, shuffle, loop (song / queue) and volume
+- **Player buttons** under the now-playing message: ⏮️ previous, ⏸️ pause/resume, ⏭️ next, ⏹️ stop
 - YouTube / SoundCloud **playlist links** add every song at once
 - **Saved server playlists**: `/playlist save`, `/playlist add`, `/playlist play`, `/playlist list`, `/playlist delete`
 - Leaves automatically when the queue ends or everyone has left
@@ -106,7 +107,9 @@ The bot needs a **Discord Bot Token** to run. If you don't know how to get one, 
 ### Music requirements
 The music commands need **FFmpeg** installed on the machine that runs the bot (`sudo apt install ffmpeg` on Debian/Ubuntu, `winget install ffmpeg` on Windows, `brew install ffmpeg` on macOS). `yt-dlp` is installed by `requirements.txt`; if YouTube playback stops working, update it with `pip install -U yt-dlp` (recent YouTube changes may also require a JavaScript runtime such as Deno or Node.js, see the yt-dlp docs).
 
-If YouTube asks the bot to "sign in to confirm you're not a bot" (common on VPS/hosting IPs), export your cookies to a `cookies.txt` file and add `YTDLP_COOKIES=path/to/cookies.txt` to your `.env`.
+If YouTube asks the bot to "sign in to confirm you're not a bot" (common on VPS/hosting IPs), export your cookies to a `cookies.txt` file and add `YTDLP_COOKIES=path/to/cookies.txt` to your `.env`. Keep that file private (it is already in `.gitignore`).
+
+If songs fail with `403 Forbidden`, update yt-dlp first (`pip install -U yt-dlp`). The bot already passes yt-dlp's HTTP headers to FFmpeg and retries a stream that dies right away. If it keeps happening you can choose the YouTube clients yt-dlp uses with `YTDLP_YOUTUBE_CLIENTS=client1,client2` in `.env` (valid names are listed in the yt-dlp documentation).
 
 ### Enable Privileged Intents
 Go to the [Discord Developer Portal](https://discord.com/developers/applications), select your application, click the **Bot** tab, and enable the following:

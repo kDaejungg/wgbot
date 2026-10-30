@@ -48,8 +48,9 @@ class Help(commands.Cog):
             name="🎵 Music",
             value=(
                 "`/music play <query>` — Plays a song or adds it to the queue. Accepts a name or a YouTube/SoundCloud link (playlist links too).\n"
+                "The now-playing message has buttons: ⏮️ previous, ⏸️ pause/resume, ⏭️ next, ⏹️ stop.\n"
                 "`/music pause` / `/music resume` — Pauses or resumes.\n"
-                "`/music skip` — Skips the current song.\n"
+                "`/music skip` / `/music previous` — Next or previous song.\n"
                 "`/music stop` — Stops and clears the queue.\n"
                 "`/music queue [page]` — Shows the queue.\n"
                 "`/music nowplaying` — Shows the current song.\n"

@@ -1,6 +1,6 @@
 [English](README.md) | [Türkçe](README.tr.md) | [Değişiklik Günlüğü](CHANGELOG.md)
 
-# WGBot (v1.3.0)
+# WGBot (v1.3.1)
 Slash komutlarıyla çalışan açık kaynaklı bir Discord moderasyon botu. Ban, timeout, uyarı sistemi, rank, ses yönetimi, tepki rolleri, anketler ve daha fazlasını destekler. Hiçbir dosyaya dokunmadan tamamen Discord üzerinden yapılandırılır.
 
 ## ⚠️ Botu yalnızca sunucuna eklemek istiyorsan bu bağlantıyı kullanıp aşağıdaki adımları atlayabilirsin: [![Discord Davet](https://img.shields.io/badge/Discord-Sunucuya_Ekle-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/oauth2/authorize?client_id=1485221526084128910&permissions=8&integration_type=0&scope=bot)
@@ -57,7 +57,8 @@ Slash komutlarıyla çalışan açık kaynaklı bir Discord moderasyon botu. Ban
 
 ### 🎵 Müzik
 - Ses kanalında **YouTube ve SoundCloud** üzerinden şarkı çalma (isimle arama veya bağlantı yapıştırma)
-- **Kuyruk** sistemi: atlama, duraklatma, devam ettirme, durdurma, kuyruktan çıkarma, temizleme, karıştırma, döngü (şarkı / kuyruk) ve ses seviyesi
+- **Kuyruk** sistemi: atlama, önceki şarkı, duraklatma, devam ettirme, durdurma, kuyruktan çıkarma, temizleme, karıştırma, döngü (şarkı / kuyruk) ve ses seviyesi
+- Şu an çalıyor mesajının altında **oynatıcı butonları**: ⏮️ önceki, ⏸️ duraklat/devam, ⏭️ sonraki, ⏹️ durdur
 - YouTube / SoundCloud **oynatma listesi bağlantıları** tüm şarkıları tek seferde ekler
 - **Kayıtlı sunucu oynatma listeleri**: `/playlist save`, `/playlist add`, `/playlist play`, `/playlist list`, `/playlist delete`
 - Kuyruk bittiğinde veya herkes çıktığında otomatik olarak kanaldan ayrılır
@@ -107,7 +108,9 @@ Botun çalışması için bir **Discord Bot Token** gerekir. Nasıl alacağını
 ### Müzik gereksinimleri
 Müzik komutları için botun çalıştığı makinede **FFmpeg** kurulu olmalıdır (Debian/Ubuntu: `sudo apt install ffmpeg`, Windows: `winget install ffmpeg`, macOS: `brew install ffmpeg`). `yt-dlp`, `requirements.txt` ile kurulur; YouTube oynatma bozulursa `pip install -U yt-dlp` ile güncelle (YouTube'daki son değişiklikler Deno veya Node.js gibi bir JavaScript çalışma ortamı da gerektirebilir, yt-dlp belgelerine bak).
 
-YouTube bottan "bot olmadığını doğrula" diye giriş isterse (VPS/hosting IP'lerinde yaygın), çerezlerini `cookies.txt` olarak dışa aktar ve `.env` dosyana `YTDLP_COOKIES=cookies.txt_yolu` ekle.
+YouTube bottan "bot olmadığını doğrula" diye giriş isterse (VPS/hosting IP'lerinde yaygın), çerezlerini `cookies.txt` olarak dışa aktar ve `.env` dosyana `YTDLP_COOKIES=cookies.txt_yolu` ekle. Bu dosyayı gizli tut (zaten `.gitignore` içinde).
+
+Şarkılar `403 Forbidden` ile başarısız olursa önce yt-dlp'yi güncelle (`pip install -U yt-dlp`). Bot yt-dlp'nin HTTP başlıklarını FFmpeg'e zaten iletiyor ve hemen kopan akışı yeniden deniyor. Yine de sürerse `.env` içinde `YTDLP_YOUTUBE_CLIENTS=istemci1,istemci2` ile yt-dlp'nin kullandığı YouTube istemcilerini seçebilirsin (geçerli adlar yt-dlp belgelerinde).
 
 ### Privileged Intent'leri Etkinleştir
 [Discord Developer Portal](https://discord.com/developers/applications)'a git, uygulamanı seç, **Bot** sekmesine tıkla ve şunları etkinleştir:
